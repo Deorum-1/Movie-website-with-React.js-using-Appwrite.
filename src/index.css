@@ -20,6 +20,7 @@
   --background-image-hero-pattern: url("/hero-bg.png");
 }
 
+/* applies to all tags */
 @layer base {
   body {
     font-family: "DM Sans", serif;
@@ -48,6 +49,7 @@
   }
 }
 
+/* applies to components */
 @layer components {
   .pattern {
     @apply bg-hero-pattern w-full h-screen bg-center bg-cover absolute z-0;
