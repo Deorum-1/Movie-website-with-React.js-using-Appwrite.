@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Search from './components/Search'
 import Spinner from './components/Spinner'
+import MovieCard from './components/MovieCard';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
 
@@ -44,7 +45,7 @@ const App = () => {
     console.error(`Error fetching movies: ${error}`)
     setErrorMessage('Error fetching movies. Please try again')
   } finally {
-    setIsLoading(true);
+    setIsLoading(false);
   }
 }
 
@@ -69,15 +70,15 @@ const App = () => {
         </header>
 
         <section className='all-movies'>
-          <h2>All Movies</h2>
-          <Spinner />
+          <h2 className='mt-5'>All Movies</h2>
+          {isLoading && <Spinner />}
        {errorMessage ? <p className='text-red-500'>{errorMessage}</p> : (<ul>
             { movieList.map((movie) => (
-              <li key={movie.id}>
-                {/* <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
-                <p className='text-white'>{movie.title}</p>
-                <p>Rating: {movie.vote_average}</p> */}
-              </li>
+              
+               
+              <MovieCard key={movie.id}  movie={movie} />
+                
+             
             ))}
           </ul>)}
         </section>
