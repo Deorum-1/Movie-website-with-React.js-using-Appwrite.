@@ -22,17 +22,20 @@ const App = () => {
   const [movieList, setMovieList] = useState([])
   const [isLoading, setIsLoading]= useState(false)
 
-  const fetchMovies = async () => {
+
+  // calling the API
+  const fetchMovies = async (query= '') => {
     setIsLoading(true);
     setErrorMessage('');
+    // trying to call the API
   try {
-    const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+    const endpoint = query ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}` : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+    // endpoint is where we are calling the API from
     const response = await fetch(endpoint, API_OPTIONS);
-    
-    if (!response.ok) {
+    // Response expected from the API
+    if (!response.ok) { //If our response from the API fails, throw an error
       throw new Error('Failed to fetch movies')
     }
-  
     const data = await response.json()
     console.log(data)
     if (data.response === 'False') {
@@ -51,13 +54,13 @@ const App = () => {
 
 
   
-  useEffect(() => {
-    fetchMovies();
+  useEffect(() => { // we use useEffect to call an API
+    fetchMovies(searchTerm);
   //   fetch(`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`, API_OPTIONS)
   // .then(res => res.json())
   // .then(res => console.log(res))
   //     .catch(err => setErrorMessage('Error fetching movies. Please try again'));
-  }, [])
+  }, [searchTerm])
   
 
   return (
