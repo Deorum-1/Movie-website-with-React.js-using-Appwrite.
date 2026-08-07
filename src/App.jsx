@@ -3,6 +3,7 @@ import Search from "./components/Search";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
+import { client, updateSearchCount } from "./lib/appwrite";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -24,31 +25,37 @@ const App = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(""); // we are using useDebounce to delay the search term update
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
+
+  useEffect(() => {
+    client
+      .ping()
+      .then(() => console.log("Appwrite ping successful"))
+      .catch((err) => console.error("Appwrite ping failed:", err));
+  }, []);
+
   // calling the API
   const fetchMovies = async (query = "") => {
-    // we are using async await to call the API
-    setIsLoading(true); // we are setting the loading state to true
-    setErrorMessage(""); // we are resetting the error message
-    // trying to call the API
+    setIsLoading(true);
+    setErrorMessage("");
+
     try {
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
         : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
-      // endpoint is where we are calling the API from
       const response = await fetch(endpoint, API_OPTIONS);
-      // Response expected from the API
       if (!response.ok) {
-        //If our response from the API fails, throw an error
         throw new Error("Failed to fetch movies");
       }
       const data = await response.json();
-      console.log(data);
       if (data.response === "False") {
-        setErrorMessage(data.error || "Failed to fetch movies");
+        setErrorMessage(data.error || "Failed to fetch 1movies");
         setMovieList([]);
         return;
       }
       setMovieList(data.results || []);
+      if (query && data.results.length > 0) {
+        await updateSearchCount(query, data.results[0]);
+      }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
       setErrorMessage("Error fetching movies. Please try again");
@@ -58,12 +65,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    // we use useEffect to call an API
     fetchMovies(debouncedSearchTerm);
-    //   fetch(`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`, API_OPTIONS)
-    // .then(res => res.json())
-    // .then(res => console.log(res))
-    //     .catch(err => setErrorMessage('Error fetching movies. Please try again'));
   }, [debouncedSearchTerm]);
 
   return (
