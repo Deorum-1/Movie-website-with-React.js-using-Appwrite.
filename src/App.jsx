@@ -21,13 +21,14 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(""); // we are using useDebounce to delay the search term update
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
   // calling the API
   const fetchMovies = async (query = "") => {
-    setIsLoading(true);
-    setErrorMessage("");
+    // we are using async await to call the API
+    setIsLoading(true); // we are setting the loading state to true
+    setErrorMessage(""); // we are resetting the error message
     // trying to call the API
     try {
       const endpoint = query
@@ -58,12 +59,12 @@ const App = () => {
 
   useEffect(() => {
     // we use useEffect to call an API
-    fetchMovies(searchTerm);
+    fetchMovies(debouncedSearchTerm);
     //   fetch(`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`, API_OPTIONS)
     // .then(res => res.json())
     // .then(res => console.log(res))
     //     .catch(err => setErrorMessage('Error fetching movies. Please try again'));
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   return (
     <main className="pattern">
