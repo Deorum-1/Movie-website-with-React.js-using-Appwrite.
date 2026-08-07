@@ -35,3 +35,5 @@ export const getTrendingMovies = async () => {
         console.error(error);
     }
 }
+
+export { client, database };
