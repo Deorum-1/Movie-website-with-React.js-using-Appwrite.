@@ -4,6 +4,9 @@ const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
 
+if (!PROJECT_ID) {
+    console.warn("VITE_APPWRITE_PROJECT_ID is not set. Appwrite requests may fail.");
+}
 const client = new Client()
     .setEndpoint("https://fra.cloud.appwrite.io/v1")
     .setProject(PROJECT_ID);
@@ -62,4 +65,15 @@ export const getTrendingMovies = async () => {
     }
 };
 
-export { client, database };
+export const appwriteFetch = async (path, options = {}) => {
+    const base = "https://fra.cloud.appwrite.io/v1";
+    const url = path.startsWith("http") ? path : `${base}${path}`;
+
+    const headers = Object.assign({}, options.headers || {}, { "X-Appwrite-Project": PROJECT_ID });
+    if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+
+    const fetchOpts = Object.assign({}, options, { headers, credentials: options.credentials ?? "include" });
+    return fetch(url, fetchOpts);
+};
+
+export { client, database, appwriteFetch };
