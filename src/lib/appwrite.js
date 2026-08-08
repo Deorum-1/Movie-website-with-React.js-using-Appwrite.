@@ -76,4 +76,4 @@ export const appwriteFetch = async (path, options = {}) => {
     return fetch(url, fetchOpts);
 };
 
-export { client, database, appwriteFetch };
+export { client, database };
